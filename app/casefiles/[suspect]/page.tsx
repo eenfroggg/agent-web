@@ -111,9 +111,6 @@ export default function CasefileDetailPage() {
 
           <section style={{ marginTop: 16, border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
             <div style={{ fontWeight: 900, marginBottom: 8 }}>잠김 섹션</div>
-            <p style={{ fontSize: 12, opacity: 0.75 }}>
-              (추후 “추가 단서로 해제” 기능을 붙일 수 있게 비워둔 구간)
-            </p>
             <pre style={{ whiteSpace: "pre-wrap", lineHeight: 1.5, fontFamily: "inherit" }}>
 {lockedText ?? "(잠김 섹션 없음)"}
             </pre>

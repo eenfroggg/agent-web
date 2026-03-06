@@ -8,12 +8,13 @@ type Suspect = (typeof suspects)[number];
 
 export default function ClaimPage() {
   const [selectedSuspect, setSelectedSuspect] = useState<Suspect>("sophia");
-  const [selectedIndex, setSelectedIndex] = useState<number>(0); // 0~4
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<string>("");
   const [cardBody, setCardBody] = useState<string>("");
   const [cardTitle, setCardTitle] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [unlockSuspect, setUnlockSuspect] = useState<string>("");
 
   const selectedCardId = useMemo(
     () => cardMap[selectedSuspect][selectedIndex],
@@ -66,6 +67,10 @@ export default function ClaimPage() {
     const prog = data.progress?.count ?? "?";
     const unlock = data.new_unlock ? " (사건파일 언락!)" : "";
     setMessage(`획득 성공: ${selectedCardId} | 진행 ${prog}/5${unlock}`);
+
+    if (data.new_unlock) {
+      setUnlockSuspect(selectedSuspect);
+    }
 
     setLoading(false);
   }
@@ -169,8 +174,53 @@ export default function ClaimPage() {
         </section>
       )}
 
+      {unlockSuspect && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.55)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 24,
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: 24,
+              maxWidth: 420,
+              width: "100%",
+              textAlign: "center",
+              border: "1px solid #ddd",
+            }}
+          >
+            <div style={{ fontSize: 28, fontWeight: 900 }}>사건파일 언락</div>
+            <p style={{ marginTop: 12, lineHeight: 1.6 }}>
+              <b>{suspectLabel[unlockSuspect as keyof typeof suspectLabel]}</b>의 단서 5개를 모두 모았습니다.
+              이제 사건파일을 열 수 있습니다.
+            </p>
+
+            <div style={{ marginTop: 16, display: "flex", gap: 8, justifyContent: "center" }}>
+              <a href={`/casefiles/${unlockSuspect}`}>
+                <button style={{ padding: "12px 16px" }}>사건파일 열기</button>
+              </a>
+              <button
+                onClick={() => setUnlockSuspect("")}
+                style={{ padding: "12px 16px" }}
+              >
+                계속 수집
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p style={{ marginTop: 16, fontSize: 12, opacity: 0.7 }}>
-        * 코드 공유는 정치 요소로 허용. 개인 인벤토리는 개인 계정에 저장됩니다.
+        * 수집한 단서는 인벤토리에서 확인할 수 있습니다.
       </p>
     </main>
   );

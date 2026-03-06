@@ -40,7 +40,6 @@ export default function HomePage() {
       const localNick = localStorage.getItem("nickname") || "";
       setNickname(metaNick || localNick || "UNKNOWN");
 
-      // 진행도: user_cards + cards 조인하여 suspect_id별 count
       const { data: rows, error } = await supabase
         .from("user_cards")
         .select("card_id, cards(suspect_id)");
@@ -58,7 +57,6 @@ export default function HomePage() {
       }
       setProgress(counts);
 
-      // 언락 상태
       const { data: unlockRows, error: unlockErr } = await supabase
         .from("casefile_unlocks")
         .select("suspect_id");
@@ -89,6 +87,12 @@ export default function HomePage() {
           로그아웃
         </button>
       </header>
+
+      <p style={{ marginTop: 20, opacity: 0.7 }}>
+        모든 단서를 수집하면 사건파일이 열립니다.
+        <br />
+        최종 단계에서 배신자를 지목하세요.
+      </p>
 
       <section style={{ marginTop: 20 }}>
         <h2 style={{ fontSize: 16, fontWeight: 800 }}>용의자 수집 진행</h2>
@@ -137,17 +141,12 @@ export default function HomePage() {
       </section>
 
       <section style={{ marginTop: 20, display: "flex", gap: 8, flexWrap: "wrap" }}>
-        <a href="/claim"><button style={{ padding: "10px 14px" }}>코드 입력(카드 획득)</button></a>
+        <a href="/claim"><button style={{ padding: "10px 14px" }}>코드 입력</button></a>
         <a href="/inventory"><button style={{ padding: "10px 14px" }}>인벤토리</button></a>
         <a href="/casefiles"><button style={{ padding: "10px 14px" }}>사건파일</button></a>
-        <a href="/news"><button style={{ padding: "10px 14px" }}>뉴스</button></a>
-        <a href="/vote"><button style={{ padding: "10px 14px" }}>투표</button></a> 
-        <a href="/tally"><button style={{ padding: "10px 14px" }}>집계</button></a>
+        <a href="/final-vote"><button style={{ padding: "10px 14px" }}>최종 투표</button></a>
       </section>
 
-      <p style={{ marginTop: 16, fontSize: 12, opacity: 0.7 }}>
-        * 진행바가 안 바뀌면 새로고침(F5)하면 반영됩니다.
-      </p>
     </main>
   );
 }
