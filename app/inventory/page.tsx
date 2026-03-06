@@ -18,7 +18,7 @@ type CardInfo = {
 type Item = {
   card_id: string;
   acquired_at: string;
-  cards?: CardInfo | null;
+  cards?: CardInfo[] | null;
 };
 
 export default function InventoryPage() {
@@ -44,7 +44,7 @@ export default function InventoryPage() {
         return;
       }
 
-      setItems((rows as Item[]) ?? []);
+      setItems((rows as unknown as Item[]) ?? []);
       setLoading(false);
     }
     boot();
@@ -67,8 +67,9 @@ export default function InventoryPage() {
       ) : (
         <div style={{ marginTop: 16, display: "grid", gap: 12 }}>
           {items.map((it) => {
-            const suspectName = it.cards?.suspect_id
-              ? suspectLabel[it.cards.suspect_id]
+            const card = it.cards?.[0];
+            const suspectName = card?.suspect_id
+              ? suspectLabel[card.suspect_id]
               : "빅터";
 
             return (
@@ -78,7 +79,7 @@ export default function InventoryPage() {
               >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                   <div style={{ fontWeight: 900 }}>
-                    {it.card_id} — {it.cards?.title ?? "카드"}
+                    {it.card_id} — {card?.title ?? "카드"}
                   </div>
                   <div style={{ fontSize: 12, opacity: 0.75 }}>
                     {new Date(it.acquired_at).toLocaleString()}
@@ -86,8 +87,8 @@ export default function InventoryPage() {
                 </div>
 
                 <div style={{ marginTop: 6, fontSize: 12, opacity: 0.8 }}>
-                  용의자: <b>{suspectName}</b> · 강도: ★{it.cards?.evidence_strength ?? "?"} ·
-                  태그: {it.cards?.tag ?? "-"} · 위치: {it.cards?.location ?? "-"}
+                  용의자: <b>{suspectName}</b> · 강도: ★{card?.evidence_strength ?? "?"} ·
+                  태그: {card?.tag ?? "-"} · 위치: {card?.location ?? "-"}
                 </div>
 
                 <details style={{ marginTop: 10 }}>
@@ -100,7 +101,7 @@ export default function InventoryPage() {
                       marginTop: 8,
                     }}
                   >
-                    {it.cards?.body ?? "(본문 없음)"}
+                    {card?.body ?? "(본문 없음)"}
                   </pre>
                 </details>
               </div>
