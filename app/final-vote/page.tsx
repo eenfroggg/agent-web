@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { suspects, suspectLabel } from "@/lib/cardMap";
 
+type Suspect = (typeof suspects)[number];
+
+type ExistingVote = {
+  id: number;
+  suspect_id: Suspect;
+};
+
 export default function FinalVotePage() {
-  const [selected, setSelected] = useState<(typeof suspects)[number]>("victor");
+  const [selected, setSelected] = useState<Suspect>("victor");
   const [submitted, setSubmitted] = useState(false);
   const [msg, setMsg] = useState("");
 
@@ -22,15 +29,11 @@ export default function FinalVotePage() {
         .from("final_votes")
         .select("id, suspect_id")
         .eq("user_id", user.id)
-        .maybeSingle();
+        .maybeSingle<ExistingVote>();
 
       if (!error && data) {
         setSubmitted(true);
-        setMsg(
-          `이미 최종 투표를 제출했습니다: ${
-            suspectLabel[(data as any).suspect_id] ?? (data as any).suspect_id
-          }`
-        );
+        setMsg(`이미 최종 투표를 제출했습니다: ${suspectLabel[data.suspect_id]}`);
       }
     }
 
@@ -68,7 +71,7 @@ export default function FinalVotePage() {
       </div>
 
       <section style={{ marginTop: 16, border: "1px solid #ddd", borderRadius: 12, padding: 14 }}>
-        <p>모든 추리를 마쳤다면, 배신자를 선택하세요.</p>
+        <p>추리를 마쳤다면, 배신자를 선택하세요.</p>
 
         <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
           {suspects.map((s) => (
@@ -121,12 +124,12 @@ export default function FinalVotePage() {
         >
           <div style={{ fontSize: 22, fontWeight: 900 }}>최종 보고 완료</div>
           <p style={{ marginTop: 10, lineHeight: 1.7 }}>
-            최종 투표 제출 완료
+            투표 종료
             <br />
-            모든 후보들이 시험을 마칠 때까지 기다려 주세요.
+            모든 후보생이 미션을 마칠 때까지 기다려 주세요
           </p>
           <p style={{ marginTop: 10, fontSize: 12, opacity: 0.7 }}>
-            수고했습니다 입단식을 위해 Hall 으로 이동해 주세요.
+            입단식을 위해 메인 홀로 이동해 주세요.
           </p>
         </section>
       )}
